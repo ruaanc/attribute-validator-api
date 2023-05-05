@@ -1,0 +1,46 @@
+PARSER_BEGIN(ValidationDSL)
+import java.util.Scanner;
+import java.io.InputStream;
+public class ValidationDSL {
+    public static void main(String[] args) {
+        try {
+            InputStream input = System.in;
+            Scanner scanner = new Scanner(input);
+            String value = scanner.nextLine();
+            ValidationDSL parser = new ValidationDSL(input);
+            parser.start(value);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+}
+
+PARSER_END(ValidationDSL)
+
+SKIP: { " " | "\t" }
+
+TOKEN : {
+    < NAME: (["a"-"z","A"-"Z"])+ >
+|   < EMAIL: (["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+ >
+}
+
+void start(String value) :
+{System.out.println(value);}
+{
+    (
+        name() |
+        email()
+    )*
+}
+
+void name() :
+{}
+{
+    < NAME > { System.out.println("Name is valid"); }
+}
+
+void email() :
+{}
+{
+    < EMAIL > { System.out.println("Email is valid"); }
+}
