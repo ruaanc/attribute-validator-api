@@ -1,9 +1,7 @@
 PARSER_BEGIN(ValidationDSL)
 import java.io.InputStream;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.Scanner;
 public class ValidationDSL {
     public static void main(String[] args) {
@@ -49,11 +47,13 @@ void start() :
                         buffer.append(scanner.nextLine());
                     }
                     scanner.close();
-                    System.out.println(buffer.toString());
-                } catch (MalformedURLException e) {
+                    String value = buffer.toString();
+                    if(value.contains("erro")) {
+                        throw new Exception("Zip code not found.");
+                    }
+                    System.out.println("Zip code is valid.");
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (IOException e) {
-                     e.printStackTrace();
                 }
                 break;
             case CNPJ:
@@ -74,5 +74,5 @@ void start() :
     } while (t.kind != 0);
 }
 {
-    (< NAME > | < EMAIL > )*
+    (<CEP> | <CPF> | <CNPJ> | <NAME> | <EMAIL> | <INPUT>)*
 }
