@@ -49,15 +49,34 @@ void start() :
                     scanner.close();
                     String value = buffer.toString();
                     if(value.contains("erro")) {
-                        throw new Exception("Zip code not found.");
+                        throw new Exception("CEP inválido.");
                     }
-                    System.out.println("Zip code is valid.");
+                    System.out.println("CEP é válido.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case CNPJ:
-                System.out.println("Cnpj: " + t.image);
+                String cnpj = t.image;
+                System.out.println("Cnpj: " + cnpj);
+                try{
+                 URL url = new URL("https://receitaws.com.br/v1/cnpj/" + cnpj.replace(".", "").replace("/", "").replace("-", ""));
+                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                 conn.setRequestMethod("GET");
+                 Scanner scanner = new Scanner(conn.getInputStream());
+                 StringBuffer buffer = new StringBuffer();
+                 while (scanner.hasNextLine()) {
+                     buffer.append(scanner.nextLine());
+                 }
+                 String value = buffer.toString();
+                 if(value.contains("ERROR")) {
+                     System.out.println(value);
+                     throw new Exception("CNPJ inválido.");
+                 }
+                 System.out.println("CNPJ é válido.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case CPF:
                 System.out.println("Cpf: " + t.image);
