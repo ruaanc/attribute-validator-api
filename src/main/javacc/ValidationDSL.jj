@@ -1,5 +1,10 @@
 PARSER_BEGIN(ValidationDSL)
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Scanner;
 public class ValidationDSL {
     public static void main(String[] args) {
         try {
@@ -26,11 +31,30 @@ TOKEN : {
 void start() :
 {
     Token t;
+
     do {
         t = getNextToken();
+
         switch (t.kind) {
             case CEP:
-                System.out.println("Cep: " + t.image);
+                String cep = t.image;
+                System.out.println("Cep: " + cep);
+                try {
+                    URL url = new URL("http://viacep.com.br/ws/"+ cep +"/json");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    Scanner scanner = new Scanner(conn.getInputStream());
+                    StringBuffer buffer = new StringBuffer();
+                    while (scanner.hasNextLine()) {
+                        buffer.append(scanner.nextLine());
+                    }
+                    scanner.close();
+                    System.out.println(buffer.toString());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                     e.printStackTrace();
+                }
                 break;
             case CNPJ:
                 System.out.println("Cnpj: " + t.image);
