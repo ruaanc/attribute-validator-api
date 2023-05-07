@@ -1,14 +1,11 @@
 PARSER_BEGIN(ValidationDSL)
-import java.util.Scanner;
 import java.io.InputStream;
 public class ValidationDSL {
     public static void main(String[] args) {
         try {
             InputStream input = System.in;
-            Scanner scanner = new Scanner(input);
-            String value = scanner.nextLine();
             ValidationDSL parser = new ValidationDSL(input);
-            parser.start(value);
+            parser.start();
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -17,30 +14,41 @@ public class ValidationDSL {
 
 PARSER_END(ValidationDSL)
 
-SKIP: { " " | "\t" }
-
 TOKEN : {
-    < NAME: (["a"-"z","A"-"Z"])+ >
-|   < EMAIL: (["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+ >
+< CEP: (["0"-"9"]){5}("-")(["0"-"9"]){3} >
+| < CPF: (["0"-"9"]){3}(".")(["0"-"9"]){3}(".")(["0"-"9"]){3}("-")(["0"-"9"]){2} >
+| < CNPJ: (["0"-"9"]){2}(".")(["0"-"9"]){3}(".")(["0"-"9"]){3}("/")(["0"-"9"]){4}("-")(["0"-"9"]){2} >
+| < NAME: (["a"-"z","A"-"Z"])+ >
+| < EMAIL: (["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+ >
+| < INPUT: (~["\r","\n"])+ >
 }
 
-void start(String value) :
-{System.out.println(value);}
+void start() :
 {
-    (
-        name() |
-        email()
-    )*
+    Token t;
+    do {
+        t = getNextToken();
+        switch (t.kind) {
+            case CEP:
+                System.out.println("Cep: " + t.image);
+                break;
+            case CNPJ:
+                System.out.println("Cnpj: " + t.image);
+                break;
+            case CPF:
+                System.out.println("Cpf: " + t.image);
+                break;
+            case NAME:
+                System.out.println("Name: " + t.image);
+                break;
+            case EMAIL:
+                System.out.println("Email: " + t.image);
+                break;
+            default:
+                break;
+        }
+    } while (t.kind != 0);
 }
-
-void name() :
-{}
 {
-    < NAME > { System.out.println("Name is valid"); }
-}
-
-void email() :
-{}
-{
-    < EMAIL > { System.out.println("Email is valid"); }
+    (< NAME > | < EMAIL > )*
 }
