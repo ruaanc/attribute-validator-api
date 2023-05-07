@@ -70,7 +70,6 @@ void start() :
                  }
                  String value = buffer.toString();
                  if(value.contains("ERROR")) {
-                     System.out.println(value);
                      throw new Exception("CNPJ inválido.");
                  }
                  System.out.println("CNPJ é válido.");
@@ -79,7 +78,36 @@ void start() :
                 }
                 break;
             case CPF:
-                System.out.println("Cpf: " + t.image);
+                String cpf = t.image;
+                System.out.println("Cpf: " + cpf);
+                try {
+                    cpf = cpf.replaceAll("[^0-9]+", "");
+                    boolean isAllDigitsSame = true;
+                    for (int i = 1; i < cpf.length(); i++) {
+                        if (cpf.charAt(i) != cpf.charAt(0)) {
+                            isAllDigitsSame = false;
+                            break;
+                        }
+                    }
+                    if (isAllDigitsSame) {
+                        throw new Exception("CPF inválido: Todos os dígitos são iguais.");
+                    }
+
+                    int sum = 0;
+                    for (int i = 0; i < 9; i++) {
+                        int digit = Integer.parseInt(cpf.substring(i, i+1));
+                        sum += digit * (10 - i);
+                    }
+                    int rest = sum % 11;
+                    int verifyingDigit1 = (rest < 2) ? 0 : (11 - rest);
+                    if ((verifyingDigit1 != Integer.parseInt(cpf.substring(9, 10)) || verifyingDigit1 == 0)) {
+                        throw new Exception("CPF inválido: Dígito verificador incorreto.");
+                    }
+
+                    System.out.println("CPF é válido.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case NAME:
                 System.out.println("Name: " + t.image);
