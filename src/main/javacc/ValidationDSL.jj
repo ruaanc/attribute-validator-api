@@ -22,7 +22,7 @@ TOKEN : {
 | < CPF: (["0"-"9"]){3}(".")(["0"-"9"]){3}(".")(["0"-"9"]){3}("-")(["0"-"9"]){2} >
 | < CNPJ: (["0"-"9"]){2}(".")(["0"-"9"]){3}(".")(["0"-"9"]){3}("/")(["0"-"9"]){4}("-")(["0"-"9"]){2} >
 | < NAME: (["a"-"z","A"-"Z", " "])+ >
-| < EMAIL: (["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+ >
+| < EMAIL: "email: "(["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+ >
 | < INPUT: (~["\r","\n"])+ >
 }
 
@@ -124,10 +124,21 @@ void start() :
                 }
                 break;
             case EMAIL:
-                System.out.println("Email: " + t.image);
+                try {
+                    String email = t.image.split(":")[1].trim();
+                    System.out.println("Email: " + email);
+                    String regex = "^[\\w.-]+@[a-z]+\\.[a-z]{2,3}$";
+                    boolean isEmailValid = email.matches(regex);
+                    if(!isEmailValid) {
+                        throw new Exception("Email inválido.");
+                    }
+                    System.out.println("Email é válido.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 break;
             default:
-                System.out.println("Default");
+                System.out.println("Error de sintaxe.");
                 break;
         }
     } while (t.kind != 0);
