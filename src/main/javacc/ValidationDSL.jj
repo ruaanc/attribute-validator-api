@@ -61,19 +61,42 @@ void start() :
                 String cnpj = inputText;
                 System.out.println("Cnpj: " + cnpj);
                 try{
-                 URL url = new URL("https://receitaws.com.br/v1/cnpj/" + cnpj.replace(".", "").replace("/", "").replace("-", ""));
-                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                 conn.setRequestMethod("GET");
-                 Scanner scanner = new Scanner(conn.getInputStream());
-                 StringBuffer buffer = new StringBuffer();
-                 while (scanner.hasNextLine()) {
-                     buffer.append(scanner.nextLine());
-                 }
-                 String value = buffer.toString();
-                 if(value.contains("ERROR")) {
-                     throw new Exception("CNPJ inválido.");
-                 }
-                 System.out.println("CNPJ é válido.");
+                  cnpj = cnpj.replaceAll("\\D", "");
+
+                  if (cnpj.length() != 14) {
+                      throw new Exception("CNPJ inválido: Não contém 14 dígitos");
+                  }
+
+                  if (cnpj.matches("(\\d)\\1{13}")) {
+                      throw new Exception("CNPJ inválido: Todos os dígitos são iguais.");
+                  }
+
+                  int sum = 0;
+                  int weight = 5;
+                  for (int i = 0; i < 12; i++) {
+                      int num = Character.getNumericValue(cnpj.charAt(i));
+                      sum += num * weight;
+                      weight = weight == 2 ? 9 : weight - 1;
+                  }
+                  int digit1 = sum % 11 < 2 ? 0 : 11 - sum % 11;
+
+                  if (Character.getNumericValue(cnpj.charAt(12)) != digit1) {
+                      throw new Exception("CNPJ inválido: Dígito verificador incorreto.");
+                  }
+
+                  sum = 0;
+                  weight = 6;
+                  for (int i = 0; i < 13; i++) {
+                      int num = Character.getNumericValue(cnpj.charAt(i));
+                      sum += num * weight;
+                      weight = weight == 2 ? 9 : weight - 1;
+                  }
+                  int digit2 = sum % 11 < 2 ? 0 : 11 - sum % 11;
+
+                  if (Character.getNumericValue(cnpj.charAt(13)) != digit2) {
+                      throw new Exception("CNPJ inválido: Dígito verificador incorreto.");
+                  }
+                  System.out.println("CNPJ é válido.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
