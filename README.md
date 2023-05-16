@@ -24,17 +24,24 @@ Uma DSL que valida texto pode ser utilizada em diversos cenários. Exemplos:
 [Gramática no JAVACC]()
 
 ### BNF
-```
-<start> ::= (<name> | <email>)*
 
-<name> ::= <NAME>
+#### Fontes
+[Program](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/Program.java) ::= [Expression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/Expression.java)
 
-<email> ::= <EMAIL>
+Expression ::= [Value](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/Value.java) | [UnaryExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/UnaryExpression.java)
 
-<NAME> ::= (["a"-"z","A"-"Z"])+
+Value ::= [ConcreteValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/ConcreteValue.java)
 
-<EMAIL> ::= (["a"-"z","A"-"Z","0"-"9","+","-","_",".","@"])+
-```
+ConcreteValue ::= [StringValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/StringValue.java)
+
+UnaryExpression ::= [ZipCodeExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/ZipCodeExpression.java) | [CnpjExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/CnpjExpression.java) | [CpfExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/CpfExpression.java) | [NameExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/NameExpression.java) | [EmailExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/EmailExpression.java)
+
+#### Classes Auxiliares
+[Type](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/util/Type.java)
+
+[PrimitiveType](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/util/PrimitiveType.java)
+
+#### Parser
 
 ## Configurações para execução:
 
