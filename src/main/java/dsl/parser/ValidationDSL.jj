@@ -7,8 +7,7 @@ import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-import dsl.Program;
-import dsl.expression.*;
+import dsl.*;
 public class ValidationDSL {
     public static void main(String[] args) {
         ValidationDSL parser;
@@ -67,9 +66,9 @@ TOKEN : /* LITERALS */
     "\"" >
 }
 
-Programa Input() :
+dsl.Program Input() :
 {
- Program response;
+ dsl.Program response;
 }
 {
     response = PProgram() < EOF >
@@ -77,7 +76,7 @@ Programa Input() :
     { return response;}
 }
 
-Programa PProgram() :
+Program PProgram() :
 {
   Expression response;
 }
@@ -206,157 +205,5 @@ Expression PEmailExp() :
   < EMAIL > response = PPrimaryExp()
   {
  return new EmailExpression(response);
-}
-}
-
-void start() :
-{
-}
-{
-    (validateCep() | validateCpf() | validateCnpj() | validateName() | validateEmail())*
-}
-
-void validateCep():
-{}
-{
-    <CEP> {
-            try {
-                String cep = token.image.split(":")[1].trim();
-                URL url = new URL("http://viacep.com.br/ws/"+ cep +"/json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                Scanner scanner = new Scanner(conn.getInputStream());
-                StringBuffer buffer = new StringBuffer();
-                while (scanner.hasNextLine()) {
-                    buffer.append(scanner.nextLine());
-                }
-                scanner.close();
-                String value = buffer.toString();
-                if(value.contains("erro")) {
-                    throw new Exception("CEP inválido.");
-                }
-                System.out.println("CEP é válido.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-      }
-}
-
-void validateCpf():
-{}
-{
-    <CPF> {
-        try {
-            String cpf = token.image.split(":")[1].trim();
-            cpf = cpf.replaceAll("[^0-9]+", "");
-            boolean isAllDigitsSame = true;
-            for (int i = 1; i < cpf.length(); i++) {
-                if (cpf.charAt(i) != cpf.charAt(0)) {
-                    isAllDigitsSame = false;
-                    break;
-                }
-            }
-            if (isAllDigitsSame) {
-                throw new Exception("CPF inválido: Todos os dígitos são iguais.");
-            }
-
-            int sum = 0;
-            for (int i = 0; i < 9; i++) {
-                int digit = Integer.parseInt(cpf.substring(i, i+1));
-                sum += digit * (10 - i);
-            }
-            int rest = sum % 11;
-            int verifyingDigit1 = (rest < 2) ? 0 : (11 - rest);
-            if ((verifyingDigit1 != Integer.parseInt(cpf.substring(9, 10)) || verifyingDigit1 == 0)) {
-                throw new Exception("CPF inválido: Dígito verificador incorreto.");
-            }
-
-            System.out.println("CPF é válido.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-void validateCnpj():
-{}
-{ <CNPJ> {
-        try{
-            String cnpj = token.image.split(":")[1].trim();
-            cnpj = cnpj.replaceAll("\\D", "");
-
-            if (cnpj.length() != 14) {
-                throw new Exception("CNPJ inválido: Não contém 14 dígitos");
-            }
-
-            if (cnpj.matches("(\\d)\\1{13}")) {
-                throw new Exception("CNPJ inválido: Todos os dígitos são iguais.");
-            }
-
-            int sum = 0;
-            int weight = 5;
-            for (int i = 0; i < 12; i++) {
-                int num = Character.getNumericValue(cnpj.charAt(i));
-                sum += num * weight;
-                weight = weight == 2 ? 9 : weight - 1;
-            }
-            int digit1 = sum % 11 < 2 ? 0 : 11 - sum % 11;
-
-            if (Character.getNumericValue(cnpj.charAt(12)) != digit1) {
-                throw new Exception("CNPJ inválido: Dígito verificador incorreto.");
-            }
-
-            sum = 0;
-            weight = 6;
-            for (int i = 0; i < 13; i++) {
-                int num = Character.getNumericValue(cnpj.charAt(i));
-                sum += num * weight;
-                weight = weight == 2 ? 9 : weight - 1;
-            }
-            int digit2 = sum % 11 < 2 ? 0 : 11 - sum % 11;
-
-            if (Character.getNumericValue(cnpj.charAt(13)) != digit2) {
-                throw new Exception("CNPJ inválido: Dígito verificador incorreto.");
-            }
-            System.out.println("CNPJ é válido.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-void validateName():
-{}
-{
- <NAME> {
-        try {
-            String name = token.image.split(":")[1].trim();
-            String regex = "^[a-zA-Z]+(([a-zA-Z ])?[a-zA-Z]*)*$";
-            boolean isValid = name.matches(regex) && name.split(" ").length >= 2;
-            if(!isValid) {
-                throw new Exception("Nome inválido.");
-            }
-            System.out.println("Nome é válido.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-void validateEmail():
-{}
-{
- <EMAIL> {
-        try {
-            String email = token.image.split(":")[1].trim();
-            String regex = "^[\\w.-]+@[a-z]+\\.[a-z]{2,3}$";
-            boolean isEmailValid = email.matches(regex);
-            if(!isEmailValid) {
-                throw new Exception("Email inválido.");
-            }
-            System.out.println("Email é válido.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 }
 }
