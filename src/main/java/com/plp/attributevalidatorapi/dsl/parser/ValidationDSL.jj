@@ -1,0 +1,234 @@
+options
+{
+  JAVA_UNICODE_ESCAPE = true;
+}
+
+PARSER_BEGIN(ValidationDSL)
+package com.plp.attributevalidatorapi.dsl.parser;
+
+import com.plp.attributevalidatorapi.dsl.Program;
+import com.plp.attributevalidatorapi.dsl.expression.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+public class ValidationDSL {
+    public static void main(String[] args) {
+        ValidationDSL parser;
+        if(args.length == 0) {
+            System.out.println("Attribute Validator: Reading . . .");
+            parser = new ValidationDSL(System.in);
+        } else if(args.length == 1) {
+            System.out.println("Attribute Validator: Reading " + args [0] + " . . .");
+            try {
+                parser = new ValidationDSL(new FileInputStream(args[0]));
+            } catch (FileNotFoundException e) {
+                System.out.println("Attribute Validator:  File " + args[0] + " not found.");
+                return;
+            }
+        } else {
+            System.out.println("Attribute Validator:  Usage is one of:");
+            System.out.println("         java ValidationDSL < inputfile");
+            System.out.println("OR");
+            System.out.println("         java ValidationDSL inputfile");
+            return;
+        }
+
+        try {
+            Program program = parser.Input();
+            if(!program.checkType()) {
+                System.out.println("Type Error");
+            }else {
+                program.execute();
+            }
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Attribute Validator: Encountered errors during parse.");
+        }
+    }
+ }
+
+
+PARSER_END(ValidationDSL)
+
+SKIP : /* WHITE SPACE */
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+TOKEN : {
+< CEP: "cep" >
+| < CPF: "cpf" >
+| < CNPJ: "cnpj" >
+| < NAME: "name" >
+| < EMAIL: "email" >
+}
+
+
+TOKEN : /* LITERALS */
+{
+  < STRING_LITERAL :
+      "\""
+      (
+        (~[ "\"", "\\", "\n", "\r" ])
+      |
+        (
+          "\\"
+          (
+            [ "n", "t", "b", "r", "f", "\\", "'", "\"" ]
+          | [ "0"-"7" ] ([ "0"-"7" ])?
+          | [ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]
+          )
+        )
+      )*
+      "\"" >
+ }
+
+
+
+Program Input() :
+{
+ Program response;
+}
+{
+    response = PProgram()
+
+    {
+        return response;
+    }
+}
+
+Program PProgram() :
+{
+  Expression response;
+}
+{
+  response = PExpression()
+  {
+    return new Program(response);
+  }
+}
+
+Expression PExpression() :
+{
+  Expression response;
+}
+{
+  response = PUnaryExp()
+  {
+    return response;
+  }
+}
+
+Expression PUnaryExp() :
+{
+  Expression response;
+}
+{
+  (
+    response = PValidateZipCode()
+  | response = PValidateCnpj()
+  | response = PValidateCpf()
+  | response = PValidateName()
+  | response = PValidateEmail()
+  | response = PPrimaryExp()
+  )
+  {
+    return response;
+  }
+}
+
+Expression PValidateZipCode() :
+{
+  Expression response;
+}
+{
+  < CEP > response = PPrimaryExp()
+  {
+    return new ValidateZipCode(response);
+  }
+}
+
+Expression PValidateCnpj() :
+{
+  Expression response;
+}
+{
+  < CNPJ > response = PPrimaryExp()
+  {
+    return new ValidateCnpj(response);
+  }
+}
+
+Expression PValidateCpf() :
+{
+  Expression response;
+}
+{
+  < CPF > response = PPrimaryExp()
+  {
+    return new ValidateCpf(response);
+  }
+}
+
+Expression PValidateName() :
+{
+  Expression response;
+}
+{
+  < NAME > response = PPrimaryExp()
+  {
+  return new ValidateName(response);
+}
+}
+
+Expression PValidateEmail() :
+{
+  Expression response;
+}
+{
+  < EMAIL > response = PPrimaryExp()
+  {
+  return new ValidateEmail(response);
+}
+}
+
+Expression PPrimaryExp() :
+{
+  Expression response;
+}
+{
+  (
+    response = PValue()
+  )
+  {
+    return response;
+  }
+}
+
+Value PValue() :
+{
+  Value response;
+}
+{
+  ( response = PStringValue() )
+  {
+    return response;
+  }
+}
+
+Value PStringValue() :
+{
+  Token token;
+}
+{
+  token = < STRING_LITERAL >
+  {
+  String tokenStr = token.toString();
+  tokenStr = tokenStr.substring(1, tokenStr.length() - 1);
+  return new StringValue(tokenStr);
+}
+}
