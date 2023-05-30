@@ -26,22 +26,40 @@ Uma DSL que valida texto pode ser utilizada em diversos cenários. Exemplos:
 ### BNF
 
 #### Fontes
-[Program](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/Program.java) ::= [Expression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/Expression.java)
+[Program](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/Program.java) ::= [Expression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/Expression.java)
 
-Expression ::= [Value](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/Value.java) | [UnaryExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/UnaryExpression.java)
+Expression ::= [Value](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/Value.java) | [UnaryExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/UnaryExpression.java)
 
-Value ::= [ConcreteValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/ConcreteValue.java)
+Value ::= [ConcreteValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ConcreteValue.java)
 
-ConcreteValue ::= [StringValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/StringValue.java)
+ConcreteValue ::= [StringValue](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/StringValue.java)
 
-UnaryExpression ::= [ZipCodeExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/ZipCodeExpression.java) | [CnpjExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/CnpjExpression.java) | [CpfExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/CpfExpression.java) | [NameExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/NameExpression.java) | [EmailExpression](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/expression/EmailExpression.java)
+UnaryExpression ::= [ValidateZipCode](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ValidateZipCode.java) | [ValidateCnpj](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ValidateCnpj.java) | [ValidateCpf](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ValidateCpf.java) | [ValidateName](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ValidateName.java) | [ValidateEmail](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/expression/ValidateEmail.java)
 
 #### Classes Auxiliares
-[Type](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/util/Type.java)
+[Type](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/util/Type.java)
 
-[PrimitiveType](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/dsl/util/PrimitiveType.java)
+[PrimitiveType](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/util/PrimitiveType.java)
+
+[NonPrimitiveType](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/util/NonPrimitiveType.java)
 
 #### Parser
+[ValidationDSL.jj](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/ValidationDSL.jj)
+
+[JavaCharStream](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/JavaCharStream.java)
+
+[ParseException](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/ParseException.java)
+
+[Token](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/Token.java)
+
+[TokenMgrError](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/TokenMgrError.java)
+
+[ValidationDSL](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/TokenMgrError.java)
+
+[ValidationDSLConstants](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/ValidationDSLConstants.java)
+
+[ValidationDSLTokenManager](https://github.com/ruaanc/attribute-validator-api/blob/add_expression/src/main/java/com/plp/attributevalidatorapi/dsl/parser/ValidationDSLTokenManager.java)
+
 
 ## Configurações para execução:
 
@@ -60,4 +78,11 @@ javac ValidationDSL.java
 
 ``` shell
 java ValidationDSL
+```
+
+Obs: Também é possível compilar através da IDE utilizada.
+
+## Exemplo de funcionamento:
+``` shell
+cep "55940-000"
 ```
